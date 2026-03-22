@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeNest — Build the Future</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050d1a;
+  --bg2: #070f20;
+  --pink: #e040fb;
+  --blue: #00d4ff;
+  --mid: #7b5ea7;
+  --teal: #0d7a8a;
+  --card-bg: rgba(10, 20, 45, 0.7);
+  --border: rgba(0, 212, 255, 0.15);
+  --text: #c9d8f0;
+  --white: #f0f6ff;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--blue);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s ease;
+  box-shadow: 0 0 20px var(--blue), 0 0 40px rgba(0,212,255,0.4);
+  transform: translate(-50%, -50%);
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(0,212,255,0.5);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: all 0.15s ease;
+}
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1000; opacity: 0.5;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 4rem;
+  background: rgba(5, 13, 26, 0.7);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 500;
+  animation: slideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
+}
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 0.75rem;
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem; font-weight: 800;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 36px; height: 36px;
+  position: relative; flex-shrink: 0;
+}
+.logo-icon svg { width: 100%; height: 100%; }
+
+.nav-links {
+  display: flex; gap: 2.5rem; list-style: none;
+}
+.nav-links a {
+  color: var(--text); text-decoration: none;
+  font-size: 0.9rem; letter-spacing: 0.12em; text-transform: uppercase;
+  transition: color 0.3s;
+  position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: linear-gradient(90deg, var(--pink), var(--blue));
+  transition: width 0.3s ease;
+}
+.nav-links a:hover { color: var(--blue); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  padding: 0.55rem 1.5rem;
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  background: transparent;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: none;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.nav-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  opacity: 0; transition: opacity 0.3s;
+}
+.nav-cta:hover { color: var(--bg); border-color: transparent; }
+.nav-cta:hover::before { opacity: 1; }
+.nav-cta span { position: relative; z-index: 1; }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding: 8rem 4rem 4rem;
+}
+
+/* Animated background orbs */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: float 8s ease-in-out infinite;
+}
+.orb-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(224,64,251,0.15) 0%, transparent 70%);
+  top: -100px; right: -100px;
+  animation-delay: 0s;
+}
+.orb-2 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(0,212,255,0.12) 0%, transparent 70%);
+  bottom: -100px; left: -100px;
+  animation-delay: -3s;
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(123,94,167,0.18) 0%, transparent 70%);
+  top: 40%; left: 30%;
+  animation-delay: -6s;
+}
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -30px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* Grid lines */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+}
+
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 900px; text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 100px;
+  font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--blue);
+  background: rgba(0,212,255,0.05);
+  margin-bottom: 2rem;
+  animation: fadeUp 1s 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.8rem, 6vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 1.5rem;
+  animation: fadeUp 1s 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+.h1-gradient {
+  background: linear-gradient(135deg, var(--pink) 0%, #a78bfa 40%, var(--blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.hero-sub {
+  font-size: 1.1rem; line-height: 1.85;
+  color: rgba(201,216,240,0.7);
+  max-width: 580px; margin: 0 auto 3rem;
+  animation: fadeUp 1s 0.7s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.hero-btns {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  animation: fadeUp 1s 0.9s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.btn-primary {
+  padding: 0.9rem 2.2rem;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  border: none; color: var(--bg);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.92rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: none;
+  position: relative; overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--blue), var(--pink));
+  opacity: 0; transition: opacity 0.3s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 40px rgba(224,64,251,0.3); }
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary span { position: relative; z-index: 1; }
+
+.btn-ghost {
+  padding: 0.9rem 2.2rem;
+  background: transparent;
+  border: 1px solid rgba(201,216,240,0.2);
+  color: var(--text);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.92rem; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: none;
+  transition: all 0.3s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.btn-ghost:hover {
+  border-color: var(--blue); color: var(--blue);
+  background: rgba(0,212,255,0.05);
+  box-shadow: 0 0 20px rgba(0,212,255,0.1);
+}
+
+/* Hero logo animation */
+.hero-logo-anim {
+  width: 160px; height: 160px;
+  margin: 0 auto 2.5rem;
+  animation: fadeUp 1s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+  position: relative;
+}
+.hero-logo-anim svg { width: 100%; height: 100%; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(201,216,240,0.4);
+  animation: fadeUp 1s 1.5s both;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--blue));
+  animation: scrollAnim 2s ease-in-out infinite;
+}
+@keyframes scrollAnim {
+  0%,100% { transform: scaleY(0); transform-origin: top; }
+  50%     { transform: scaleY(1); transform-origin: top; }
+}
+
+/* ── MARQUEE ── */
+.marquee-section {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0;
+  overflow: hidden;
+  position: relative;
+  background: rgba(0,212,255,0.02);
+}
+.marquee-track {
+  display: flex; gap: 4rem;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+  font-size: 0.88rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(201,216,240,0.35);
+  align-items: center;
+}
+.marquee-track span.sep {
+  color: var(--blue); font-size: 1rem; opacity: 0.5;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ── SECTIONS ── */
+section {
+  padding: 7rem 4rem;
+  position: relative;
+}
+
+.section-label {
+  font-size: 0.82rem; letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.section-label::before {
+  content: ''; display: block;
+  width: 30px; height: 1px;
+  background: var(--blue);
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 800; color: var(--white);
+  line-height: 1.15; margin-bottom: 1.5rem;
+}
+
+/* ── SERVICES ── */
+#services .container {
+  max-width: 1200px; margin: 0 auto;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  background: transparent;
+  border: none;
+  margin-top: 4rem;
+}
+
+.service-card {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  position: relative; overflow: hidden;
+  transition: background 0.4s, transform 0.3s, box-shadow 0.3s;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.service-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(224,64,251,0.05) 0%, rgba(0,212,255,0.05) 100%);
+  opacity: 0; transition: opacity 0.4s;
+  border-radius: 20px;
+}
+.service-card:hover { background: rgba(15,30,60,0.9); transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.service-card:hover::before { opacity: 1; }
+
+.service-num {
+  font-size: 0.8rem; letter-spacing: 0.2em;
+  color: rgba(0,212,255,0.4); margin-bottom: 2rem;
+}
+.service-icon {
+  width: 48px; height: 48px; margin-bottom: 1.5rem;
+  position: relative;
+}
+.service-icon svg { width: 100%; height: 100%; }
+
+.service-card h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.25rem; font-weight: 700; color: var(--white);
+  margin-bottom: 0.75rem;
+}
+.service-card p {
+  font-size: 0.95rem; line-height: 1.8;
+  color: rgba(201,216,240,0.55);
+}
+
+.service-arrow {
+  position: absolute; bottom: 1.5rem; right: 1.5rem;
+  width: 32px; height: 32px; opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.service-card:hover .service-arrow { opacity: 1; transform: translate(4px, -4px); }
+
+/* ── STATS ── */
+#stats {
+  background: linear-gradient(180deg, transparent, rgba(0,212,255,0.03) 50%, transparent);
+  text-align: center;
+}
+.stats-grid {
+  max-width: 900px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+.stat-item {}
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 3rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.85rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(201,216,240,0.4); margin-top: 0.5rem;
+}
+
+/* ── PROCESS ── */
+#process .container { max-width: 1100px; margin: 0 auto; }
+
+.process-steps {
+  margin-top: 4rem;
+  display: flex; flex-direction: column; gap: 0;
+  position: relative;
+}
+.process-steps::before {
+  content: '';
+  position: absolute; left: 24px; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--pink), var(--blue), var(--teal));
+}
+
+.process-step {
+  display: flex; gap: 3rem; align-items: flex-start;
+  padding: 2.5rem 0 2.5rem 0;
+  position: relative;
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.process-step.visible { opacity: 1; transform: translateX(0); }
+
+.step-marker {
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 800;
+  color: var(--blue);
+  position: relative; z-index: 2;
+  transition: all 0.3s;
+  box-shadow: 0 0 20px rgba(0,212,255,0.2);
+}
+.process-step:hover .step-marker {
+  background: var(--blue); color: var(--bg);
+  box-shadow: 0 0 30px rgba(0,212,255,0.5);
+}
+
+.step-content { flex: 1; }
+.step-content h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.3rem; font-weight: 700; color: var(--white);
+  margin-bottom: 0.5rem;
+}
+.step-content p {
+  font-size: 1rem; line-height: 1.85;
+  color: rgba(201,216,240,0.55);
+}
+
+/* ── TECH STACK ── */
+#tech { text-align: center; }
+#tech .container { max-width: 1000px; margin: 0 auto; }
+
+.tech-grid {
+  display: flex; flex-wrap: wrap; gap: 1rem;
+  justify-content: center; margin-top: 3rem;
+}
+
+.tech-pill {
+  padding: 0.65rem 1.6rem;
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.9rem; letter-spacing: 0.08em;
+  color: rgba(201,216,240,0.6);
+  background: rgba(10,20,45,0.5);
+  transition: all 0.3s;
+  cursor: none;
+  position: relative; overflow: hidden;
+}
+.tech-pill::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(0,212,255,0.1));
+  opacity: 0; transition: opacity 0.3s;
+}
+.tech-pill:hover {
+  border-color: var(--blue); color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,212,255,0.15);
+}
+.tech-pill:hover::before { opacity: 1; }
+
+/* ── CTA SECTION ── */
+#cta {
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.cta-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(224,64,251,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+#cta .container { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
+#cta h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800; color: var(--white); margin-bottom: 1.5rem;
+}
+#cta p {
+  font-size: 1.05rem; line-height: 1.8;
+  color: rgba(201,216,240,0.6); margin-bottom: 3rem;
+}
+
+.cta-input-row {
+  display: flex; gap: 0; justify-content: center;
+  max-width: 480px; margin: 0 auto;
+}
+.cta-input {
+  flex: 1;
+  padding: 0.9rem 1.5rem;
+  background: rgba(10,20,45,0.8);
+  border: 1px solid var(--border); border-right: none;
+  color: var(--white);
+  font-family: 'Space Mono', monospace; font-size: 0.92rem;
+  outline: none;
+  transition: border-color 0.3s;
+  clip-path: polygon(6px 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+.cta-input:focus { border-color: var(--blue); }
+.cta-input::placeholder { color: rgba(201,216,240,0.3); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 3rem 4rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1.5rem;
+}
+.footer-logo {
+  font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.footer-copy { font-size: 0.88rem; color: rgba(201,216,240,0.3); letter-spacing: 0.08em; }
+.footer-links { display: flex; gap: 2rem; }
+.footer-links a {
+  font-size: 0.88rem; letter-spacing: 0.08em; color: rgba(201,216,240,0.4);
+  text-decoration: none; transition: color 0.3s;
+}
+.footer-links a:hover { color: var(--blue); }
+
+/* ── REVEAL ANIMATIONS ── */
+.reveal {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── BOTS SECTION ── */
+#bots { background: linear-gradient(180deg, transparent, rgba(224,64,251,0.02) 50%, transparent); }
+
+.bots-intro {
+  font-size: 1.05rem; line-height: 1.8;
+  color: rgba(201,216,240,0.6);
+  max-width: 580px; margin: 0 auto 3rem;
+}
+
+/* Bot tabs */
+.bot-tabs {
+  display: flex; gap: 0; justify-content: center;
+  margin-bottom: 2.5rem;
+  border: 1px solid var(--border);
+  width: fit-content; margin-left: auto; margin-right: auto;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.bot-tab {
+  padding: 0.85rem 2rem;
+  background: transparent;
+  border: none; border-right: 1px solid var(--border);
+  color: rgba(201,216,240,0.45);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.88rem; letter-spacing: 0.08em;
+  cursor: none;
+  transition: all 0.3s;
+  display: flex; align-items: center; gap: 0.5rem;
+  position: relative; overflow: hidden;
+}
+.bot-tab:last-child { border-right: none; }
+.bot-tab::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(224,64,251,0.1), rgba(0,212,255,0.1));
+  opacity: 0; transition: opacity 0.3s;
+}
+.bot-tab:hover { color: var(--white); }
+.bot-tab:hover::before { opacity: 1; }
+.bot-tab.active {
+  color: var(--white);
+  background: linear-gradient(135deg, rgba(224,64,251,0.15), rgba(0,212,255,0.15));
+}
+.bot-tab.active::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pink), var(--blue));
+}
+.bot-tab-icon { display: flex; align-items: center; flex-shrink: 0; }
+
+/* Billing toggle */
+.billing-toggle {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1rem; margin-bottom: 3rem;
+}
+.billing-label {
+  font-size: 0.9rem; letter-spacing: 0.08em;
+  color: rgba(201,216,240,0.45);
+  transition: color 0.3s;
+}
+.toggle-wrap { cursor: none; }
+.toggle-track {
+  width: 52px; height: 28px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: rgba(10,20,45,0.8);
+  position: relative; padding: 3px;
+  transition: border-color 0.3s;
+}
+.toggle-track:hover { border-color: var(--blue); }
+.toggle-thumb {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 0 10px rgba(0,212,255,0.4);
+}
+.toggle-thumb.yearly { transform: translateX(24px); }
+
+.save-badge {
+  padding: 0.3rem 0.85rem;
+  background: linear-gradient(135deg, rgba(224,64,251,0.2), rgba(0,212,255,0.2));
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 100px;
+  font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blue);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+/* Bot panels */
+.bot-panel { display: none; }
+.bot-panel.active { display: block; }
+
+/* Per-bot panel backgrounds */
+#panel-lyrio    { --bot-a: #e040fb; --bot-b: #00d4ff; --bot-c: rgba(224,64,251,0.12); --bot-d: rgba(0,212,255,0.08); }
+#panel-antinuke { --bot-a: #00d4ff; --bot-b: #00f5a0; --bot-c: rgba(0,212,255,0.12); --bot-d: rgba(0,245,160,0.08); }
+#panel-nuke     { --bot-a: #ff4040; --bot-b: #e040fb; --bot-c: rgba(255,64,64,0.14); --bot-d: rgba(224,64,251,0.08); }
+#panel-massdm   { --bot-a: #f7b731; --bot-b: #00d4ff; --bot-c: rgba(247,183,49,0.12); --bot-d: rgba(0,212,255,0.08); }
+#panel-custom   { --bot-a: #a78bfa; --bot-b: #e040fb; --bot-c: rgba(167,139,250,0.12); --bot-d: rgba(224,64,251,0.08); }
+
+/* Bot hero card */
+.bot-hero-card {
+  display: flex; gap: 2.5rem; align-items: flex-start;
+  background: linear-gradient(135deg, var(--bot-c, rgba(224,64,251,0.08)) 0%, var(--bot-d, rgba(0,212,255,0.05)) 100%), var(--card-bg);
+  border: 1px solid color-mix(in srgb, var(--bot-a, #e040fb) 30%, transparent);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(16px);
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  border-radius: 20px;
+  box-shadow: 0 0 60px color-mix(in srgb, var(--bot-a, #e040fb) 8%, transparent);
+}
+.bot-hero-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bot-a, var(--pink)), var(--bot-b, var(--blue)), transparent);
+}
+/* Decorative glowing orb inside hero card */
+.bot-hero-card::after {
+  content: '';
+  position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--bot-a, #e040fb) 20%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+  filter: blur(30px);
+}
+.bot-hero-card:hover {
+  border-color: color-mix(in srgb, var(--bot-a, #e040fb) 50%, transparent);
+  box-shadow: 0 0 80px color-mix(in srgb, var(--bot-a, #e040fb) 14%, transparent);
+}
+
+.bot-hero-icon {
+  flex-shrink: 0;
+  width: 90px; height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--bot-a, #e040fb) 15%, transparent), color-mix(in srgb, var(--bot-b, #00d4ff) 15%, transparent));
+  border: 1px solid color-mix(in srgb, var(--bot-a, #e040fb) 30%, transparent);
+  border-radius: 20px;
+  box-shadow: 0 0 30px color-mix(in srgb, var(--bot-a, #e040fb) 12%, transparent);
+}
+.bot-hero-icon svg { width: 52px; height: 52px; }
+.bot-hero-info h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem; font-weight: 800; color: var(--white);
+  margin-bottom: 0.6rem;
+}
+.bot-hero-info p {
+  font-size: 0.98rem; line-height: 1.8;
+  color: rgba(201,216,240,0.6); margin-bottom: 1.2rem;
+  max-width: 620px;
+}
+.bot-features-inline {
+  display: flex; flex-wrap: wrap; gap: 0.6rem;
+}
+.bot-features-inline span {
+  font-size: 0.78rem; letter-spacing: 0.08em;
+  color: var(--bot-a, var(--blue));
+  padding: 0.25rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--bot-a, #00d4ff) 30%, transparent);
+  background: color-mix(in srgb, var(--bot-a, #00d4ff) 8%, transparent);
+  border-radius: 100px;
+}
+
+/* Pricing grid */
+.pricing-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  background: transparent;
+  border: none;
+}
+
+.price-card {
+  background: var(--card-bg);
+  padding: 2.5rem 2rem;
+  position: relative;
+  backdrop-filter: blur(10px);
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+  display: flex; flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+.price-card:hover {
+  background: rgba(15,30,60,0.95);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.price-card.popular {
+  background: linear-gradient(160deg,
+    color-mix(in srgb, var(--bot-a, #e040fb) 10%, transparent),
+    color-mix(in srgb, var(--bot-b, #00d4ff) 10%, transparent));
+  border-color: color-mix(in srgb, var(--bot-a, #e040fb) 40%, transparent);
+  z-index: 2;
+  box-shadow: 0 0 50px color-mix(in srgb, var(--bot-a, #e040fb) 10%, transparent);
+}
+
+.popular-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--bot-a, var(--pink)), var(--bot-b, var(--blue)));
+  color: var(--bg);
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.3rem 1.1rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.plan-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem; font-weight: 700; color: var(--white);
+  margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em;
+}
+
+.plan-price {
+  margin-bottom: 0.75rem;
+  display: flex; align-items: baseline; gap: 0.3rem;
+}
+.price-amount {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.8rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--bot-a, var(--pink)), var(--bot-b, var(--blue)));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1;
+}
+.curr-symbol {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem; font-weight: 800;
+  background: linear-gradient(135deg, var(--bot-a, var(--pink)), var(--bot-b, var(--blue)));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; line-height: 1; align-self: flex-start; margin-top: 6px;
+}
+.price-period {
+  font-size: 0.9rem; color: rgba(201,216,240,0.4);
+}
+
+.plan-desc {
+  font-size: 0.85rem; line-height: 1.7;
+  color: rgba(201,216,240,0.45);
+  margin-bottom: 1.5rem; min-height: 48px;
+}
+
+.plan-features {
+  list-style: none; margin-bottom: 2rem; flex: 1;
+  display: flex; flex-direction: column; gap: 0.65rem;
+}
+.plan-features li {
+  font-size: 0.88rem; color: rgba(201,216,240,0.7);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.feat-check { color: var(--bot-b, var(--blue)); font-size: 0.9rem; flex-shrink: 0; }
+.feat-x { color: rgba(201,216,240,0.2); font-size: 0.9rem; flex-shrink: 0; }
+
+.plan-btn {
+  width: 100%; padding: 0.9rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.88rem; letter-spacing: 0.08em; text-transform: uppercase;
+  cursor: none; transition: all 0.3s; border: none;
+  margin-top: auto; border-radius: 12px;
+}
+.plan-btn-primary {
+  background: linear-gradient(135deg, var(--bot-a, var(--pink)), var(--bot-b, var(--blue)));
+  color: var(--bg); font-weight: 700;
+  position: relative; overflow: hidden;
+}
+.plan-btn-primary::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--bot-b, var(--blue)), var(--bot-a, var(--pink)));
+  opacity: 0; transition: opacity 0.3s;
+}
+.plan-btn-primary:hover::before { opacity: 1; }
+.plan-btn-primary span { position: relative; z-index: 1; }
+.plan-btn-ghost {
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--bot-a, #e040fb) 25%, transparent);
+  color: rgba(201,216,240,0.6);
+  border-radius: 12px;
+}
+.plan-btn-ghost:hover {
+  border-color: var(--bot-a, var(--blue));
+  color: var(--bot-a, var(--blue));
+  background: color-mix(in srgb, var(--bot-a, #00d4ff) 8%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--bot-a, #00d4ff) 15%, transparent);
+}
+
+.pricing-grid-2 {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  background: transparent;
+  border: none;
+}
+.pricing-grid-1 {
+  display: flex; justify-content: center;
+  background: transparent;
+  border: none;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  nav { padding: 1rem 2rem; }
+  .nav-links { display: none; }
+  section { padding: 5rem 2rem; }
+  .services-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: 1fr; gap: 1px; }
+  .bot-hero-card { flex-direction: column; gap: 1.5rem; }
+  .bot-tabs { flex-direction: column; width: 100%; }
+  .bot-tab { border-right: none; border-bottom: 1px solid var(--border); }
+  .bot-tab:last-child { border-bottom: none; }
+  footer { padding: 2rem; flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 600px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: 1fr; }
+  .cta-input-row { flex-direction: column; }
+  .cta-input { clip-path: none; border-right: 1px solid var(--border); border-bottom: none; }
+  .btn-primary { clip-path: none; width: 100%; }
+}
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes rotateReverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+.orbit-outer { animation: rotateSlow 12s linear infinite; transform-origin: center; }
+.orbit-inner { animation: rotateReverse 8s linear infinite; transform-origin: center; }
+
+/* Shimmer on logo C */
+@keyframes shimmer {
+  0%,100% { filter: drop-shadow(0 0 12px rgba(0,212,255,0.5)) drop-shadow(0 0 30px rgba(224,64,251,0.3)); }
+  50%     { filter: drop-shadow(0 0 20px rgba(0,212,255,0.8)) drop-shadow(0 0 50px rgba(224,64,251,0.5)); }
+}
+.logo-c-shape { animation: shimmer 3s ease-in-out infinite; }
+
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e040fb"/>
+            <stop offset="50%" stop-color="#7b5ea7"/>
+            <stop offset="100%" stop-color="#00d4ff"/>
+          </linearGradient>
+        </defs>
+        <path class="logo-c-shape" d="M28 12 C 18 8, 8 14, 8 20 C 8 26, 16 32, 26 30"
+          stroke="url(#g1)" stroke-width="5" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    CodeNest
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#tech">Stack</a></li>
+    <li><a href="#bots">Bots</a></li>
+    <li><a href="#cta">Contact</a></li>
+    <li><a href="https://discord.gg/tvycnZvhQy" target="_blank">Discord</a></li>
+  </ul>
+  <button class="nav-cta" onclick="window.open('https://discord.gg/tvycnZvhQy','_blank')"><span>Start Project</span></button>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-bg"></div>
+
+  <div class="hero-content">
+    <!-- Animated logo -->
+    <div class="hero-logo-anim">
+      <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="heroG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e040fb"/>
+            <stop offset="50%" stop-color="#8b5cf6"/>
+            <stop offset="100%" stop-color="#00d4ff"/>
+          </linearGradient>
+          <linearGradient id="orbitG" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="rgba(224,64,251,0.2)"/>
+            <stop offset="100%" stop-color="rgba(0,212,255,0.2)"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer orbit ring -->
+        <g class="orbit-outer">
+          <circle cx="80" cy="80" r="72" stroke="url(#orbitG)" stroke-width="1" stroke-dasharray="8 12" fill="none"/>
+          <circle cx="80" cy="10" r="4" fill="#e040fb" opacity="0.7"/>
+        </g>
+        <!-- Inner orbit ring -->
+        <g class="orbit-inner">
+          <circle cx="80" cy="80" r="55" stroke="rgba(0,212,255,0.15)" stroke-width="1" stroke-dasharray="4 8" fill="none"/>
+          <circle cx="135" cy="80" r="3" fill="#00d4ff" opacity="0.7"/>
+        </g>
+        <!-- Shadow/ghost C -->
+        <path d="M108 46 C 78 28, 34 40, 34 80 C 34 118, 74 132, 106 116"
+          stroke="rgba(224,64,251,0.12)" stroke-width="22" stroke-linecap="round" fill="none"/>
+        <!-- Main C -->
+        <path class="logo-c-shape"
+          d="M108 46 C 78 28, 34 40, 34 80 C 34 118, 74 132, 106 116"
+          stroke="url(#heroG)" stroke-width="16" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Now available for 2025 projects
+    </div>
+
+    <h1>
+      Code that<br>
+      <span class="h1-gradient">Nests, Scales</span><br>
+      & Ships Fast
+    </h1>
+
+    <p class="hero-sub">
+      We architect modern digital products — from sleek frontends to robust backend systems. Built with precision, deployed with confidence.
+    </p>
+
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="window.open('https://discord.gg/tvycnZvhQy','_blank')"><span>View Our Work</span></button>
+      <button class="btn-ghost" onclick="window.open('https://discord.gg/tvycnZvhQy','_blank')">Contact Us</button>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    Scroll
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span>React</span><span class="sep">◆</span>
+    <span>Node.js</span><span class="sep">◆</span>
+    <span>TypeScript</span><span class="sep">◆</span>
+    <span>Cloud Architecture</span><span class="sep">◆</span>
+    <span>UI/UX Design</span><span class="sep">◆</span>
+    <span>API Development</span><span class="sep">◆</span>
+    <span>DevOps</span><span class="sep">◆</span>
+    <span>Mobile Apps</span><span class="sep">◆</span>
+    <span>AI Integration</span><span class="sep">◆</span>
+    <span>React</span><span class="sep">◆</span>
+    <span>Node.js</span><span class="sep">◆</span>
+    <span>TypeScript</span><span class="sep">◆</span>
+    <span>Cloud Architecture</span><span class="sep">◆</span>
+    <span>UI/UX Design</span><span class="sep">◆</span>
+    <span>API Development</span><span class="sep">◆</span>
+    <span>DevOps</span><span class="sep">◆</span>
+    <span>Mobile Apps</span><span class="sep">◆</span>
+    <span>AI Integration</span><span class="sep">◆</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">What we build</div>
+      <h2 class="section-title">Services that move<br>the needle forward</h2>
+    </div>
+
+    <div class="services-grid reveal">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <rect x="4" y="10" width="40" height="28" rx="2" stroke="url(#sg1)" stroke-width="2"/>
+            <path d="M16 20 L10 24 L16 28" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M32 20 L38 24 L32 28" stroke="#e040fb" stroke-width="2" stroke-linecap="round"/>
+            <path d="M27 17 L21 31" stroke="rgba(201,216,240,0.5)" stroke-width="1.5" stroke-linecap="round"/>
+            <defs><linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <h3>Frontend Development</h3>
+        <p>Pixel-perfect interfaces built with React, Vue, and modern CSS. Fast, accessible, and delightful to use.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="18" stroke="url(#sg2)" stroke-width="2"/>
+            <path d="M24 6 C14 14, 14 34, 24 42" stroke="#e040fb" stroke-width="1.5" fill="none"/>
+            <path d="M24 6 C34 14, 34 34, 24 42" stroke="#00d4ff" stroke-width="1.5" fill="none"/>
+            <path d="M6 24 H42" stroke="rgba(201,216,240,0.3)" stroke-width="1.5"/>
+            <defs><linearGradient id="sg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <h3>Backend & APIs</h3>
+        <p>Scalable server architecture with Node.js, Python, and Go. RESTful and GraphQL APIs that power real products.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <rect x="6" y="14" width="16" height="12" rx="2" stroke="#e040fb" stroke-width="2"/>
+            <rect x="26" y="22" width="16" height="12" rx="2" stroke="#00d4ff" stroke-width="2"/>
+            <rect x="14" y="28" width="16" height="10" rx="2" stroke="rgba(201,216,240,0.4)" stroke-width="1.5"/>
+            <path d="M22 20 H26" stroke="rgba(201,216,240,0.3)" stroke-width="1.5"/>
+            <path d="M22 28 H26 V26" stroke="rgba(201,216,240,0.3)" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3>Cloud & DevOps</h3>
+        <p>AWS, GCP, and Azure infrastructure. CI/CD pipelines, Dockerized deployments, and 99.9% uptime guarantees.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="service-card">
+        <div class="service-num">04</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <rect x="10" y="6" width="28" height="36" rx="3" stroke="url(#sg3)" stroke-width="2"/>
+            <rect x="16" y="26" width="16" height="6" rx="1" fill="rgba(224,64,251,0.2)" stroke="#e040fb" stroke-width="1.5"/>
+            <path d="M16 14 H32 M16 19 H26" stroke="rgba(201,216,240,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+            <defs><linearGradient id="sg3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <h3>Mobile Apps</h3>
+        <p>Cross-platform React Native and Flutter apps with native performance. iOS and Android, one codebase.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="service-card">
+        <div class="service-num">05</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <path d="M8 36 C8 36, 14 18, 24 20 C34 22, 40 10, 40 10" stroke="url(#sg4)" stroke-width="2" stroke-linecap="round" fill="none"/>
+            <circle cx="24" cy="20" r="3" fill="#7b5ea7"/>
+            <circle cx="14" cy="30" r="2" fill="#e040fb" opacity="0.7"/>
+            <circle cx="34" cy="16" r="2" fill="#00d4ff" opacity="0.7"/>
+            <defs><linearGradient id="sg4" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <h3>AI Integration</h3>
+        <p>LLM-powered features, RAG pipelines, and custom AI models woven seamlessly into your product.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <div class="service-card">
+        <div class="service-num">06</div>
+        <div class="service-icon">
+          <svg viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="10" stroke="url(#sg5)" stroke-width="2"/>
+            <circle cx="24" cy="24" r="4" fill="rgba(224,64,251,0.3)" stroke="#e040fb" stroke-width="1.5"/>
+            <path d="M24 8 V14 M24 34 V40 M8 24 H14 M34 24 H40" stroke="rgba(0,212,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+            <defs><linearGradient id="sg5" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <h3>Design Systems</h3>
+        <p>Scalable component libraries and design tokens. Figma to code without the friction.</p>
+        <svg class="service-arrow" viewBox="0 0 32 32" fill="none">
+          <path d="M8 24 L24 8 M24 8 H12 M24 8 V20" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid reveal">
+    <div class="stat-item">
+      <div class="stat-num" data-target="120">0</div>
+      <div class="stat-label">Projects Shipped</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="48">0</div>
+      <div class="stat-label">Happy Clients</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="99">0</div>
+      <div class="stat-label">% Uptime SLA</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" data-target="8">0</div>
+      <div class="stat-label">Years Building</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">How we work</div>
+      <h2 class="section-title">A process built<br>for velocity</h2>
+    </div>
+
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-marker">01</div>
+        <div class="step-content">
+          <h3>Discovery & Strategy</h3>
+          <p>We deep-dive into your problem space, map user journeys, define success metrics, and align on the architecture before writing a single line of code.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-marker">02</div>
+        <div class="step-content">
+          <h3>Design & Prototyping</h3>
+          <p>Interactive prototypes validated by real users. We ship Figma files you can actually hand off — not wireframes that gather dust.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-marker">03</div>
+        <div class="step-content">
+          <h3>Agile Development</h3>
+          <p>Two-week sprints with a demo every Friday. You see progress, give feedback, and stay in control — no black-box development.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-marker">04</div>
+        <div class="step-content">
+          <h3>QA & Performance</h3>
+          <p>Automated test suites, Lighthouse scores above 95, and zero-downtime deployments via blue/green strategies.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-marker">05</div>
+        <div class="step-content">
+          <h3>Launch & Scale</h3>
+          <p>Monitored rollouts, real-time dashboards, and a 90-day post-launch support window. We're here after the confetti settles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label" style="justify-content:center">Technologies</div>
+      <h2 class="section-title">Our stack runs deep</h2>
+      <p style="font-size:1rem;color:rgba(201,216,240,0.5);max-width:450px;margin:0 auto">
+        Opinionated choices, proven in production. We pick tools that scale, not tools that trend.
+      </p>
+    </div>
+    <div class="tech-grid reveal">
+      <div class="tech-pill">React</div>
+      <div class="tech-pill">Next.js</div>
+      <div class="tech-pill">TypeScript</div>
+      <div class="tech-pill">Node.js</div>
+      <div class="tech-pill">Python</div>
+      <div class="tech-pill">Go</div>
+      <div class="tech-pill">PostgreSQL</div>
+      <div class="tech-pill">Redis</div>
+      <div class="tech-pill">GraphQL</div>
+      <div class="tech-pill">Docker</div>
+      <div class="tech-pill">Kubernetes</div>
+      <div class="tech-pill">AWS</div>
+      <div class="tech-pill">Terraform</div>
+      <div class="tech-pill">React Native</div>
+      <div class="tech-pill">Flutter</div>
+      <div class="tech-pill">OpenAI / Claude API</div>
+      <div class="tech-pill">Stripe</div>
+      <div class="tech-pill">Figma</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTS -->
+<section id="bots">
+  <div class="container" style="max-width:1200px;margin:0 auto">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label" style="justify-content:center">Discord Bots</div>
+      <h2 class="section-title">Powerful bots.<br><span class="h1-gradient">Built for your server.</span></h2>
+      <p class="bots-intro">Choose your bot, pick your plan. Every bot comes with 24/7 uptime, instant setup, and dedicated support.</p>
+    </div>
+
+    <!-- Bot tabs -->
+    <div class="bot-tabs reveal">
+      <button class="bot-tab active" data-bot="lyrio" onclick="switchBot('lyrio',this)">
+        <span class="bot-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 52 52" fill="none">
+            <defs><linearGradient id="tg1" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <path d="M10 28 C10 16 18 8 26 8 C34 8 42 16 42 28" stroke="url(#tg1)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <rect x="6" y="27" width="8" height="13" rx="4" stroke="url(#tg1)" stroke-width="2.5" fill="rgba(224,64,251,0.15)"/>
+            <rect x="38" y="27" width="8" height="13" rx="4" stroke="url(#tg1)" stroke-width="2.5" fill="rgba(0,212,255,0.15)"/>
+          </svg>
+        </span> Lyrio Bot
+      </button>
+      <button class="bot-tab" data-bot="antinuke" onclick="switchBot('antinuke',this)">
+        <span class="bot-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 52 52" fill="none">
+            <defs><linearGradient id="tg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <path d="M26 6 L44 13 L44 27 C44 37 35 45 26 48 C17 45 8 37 8 27 L8 13 Z" stroke="url(#tg2)" stroke-width="2.5" fill="rgba(0,212,255,0.1)" stroke-linejoin="round"/>
+            <path d="M18 27 L23 32 L34 21" stroke="url(#tg2)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span> AntiNuke Bot
+      </button>
+      <button class="bot-tab" data-bot="nuke" onclick="switchBot('nuke',this)">
+        <span class="bot-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 52 52" fill="none">
+            <defs><linearGradient id="tg3" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <path d="M30 6 L16 28 L24 28 L22 46 L38 22 L28 22 Z" stroke="url(#tg3)" stroke-width="2.2" stroke-linejoin="round" fill="rgba(224,64,251,0.15)"/>
+          </svg>
+        </span> Nuke Bot
+      </button>
+      <button class="bot-tab" data-bot="massdm" onclick="switchBot('massdm',this)">
+        <span class="bot-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 52 52" fill="none">
+            <defs><linearGradient id="tg4" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <rect x="6" y="12" width="40" height="28" rx="4" stroke="url(#tg4)" stroke-width="2.2" fill="rgba(0,212,255,0.07)"/>
+            <path d="M6 16 L26 30 L46 16" stroke="url(#tg4)" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </span> Mass DM Bot
+      </button>
+      <button class="bot-tab" data-bot="custom" onclick="switchBot('custom',this)">
+        <span class="bot-tab-icon">
+          <svg width="18" height="18" viewBox="0 0 52 52" fill="none">
+            <defs><linearGradient id="tg5" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <circle cx="26" cy="26" r="18" stroke="url(#tg5)" stroke-width="2.2" fill="rgba(224,64,251,0.07)"/>
+            <path d="M20 26 L24 30 L32 22" stroke="url(#tg5)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="26" cy="10" r="2.5" fill="#e040fb"/>
+            <circle cx="26" cy="42" r="2.5" fill="#00d4ff"/>
+            <circle cx="10" cy="26" r="2.5" fill="#7b5ea7"/>
+            <circle cx="42" cy="26" r="2.5" fill="#7b5ea7"/>
+          </svg>
+        </span> Custom Bot
+      </button>
+    </div>
+
+    <!-- Billing toggle -->
+    <div class="billing-toggle reveal">
+      <span class="billing-label" id="lbl-monthly" style="color:var(--white)">Monthly</span>
+      <div class="toggle-wrap" onclick="toggleBilling()">
+        <div class="toggle-track">
+          <div class="toggle-thumb" id="toggleThumb"></div>
+        </div>
+      </div>
+      <span class="billing-label" id="lbl-yearly">Yearly</span>
+      <span class="save-badge">Save 26%</span>
+    </div>
+
+    <!-- ── LYRIO (MUSIC) BOT ── -->
+    <div class="bot-panel active" id="panel-lyrio">
+      <div class="bot-hero-card reveal">
+        <div class="bot-hero-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="musicG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <path d="M10 28 C10 14 18 7 26 7 C34 7 42 14 42 28" stroke="url(#musicG)" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+            <rect x="5" y="26" width="10" height="15" rx="5" stroke="url(#musicG)" stroke-width="2.5" fill="rgba(224,64,251,0.18)"/>
+            <rect x="37" y="26" width="10" height="15" rx="5" stroke="url(#musicG)" stroke-width="2.5" fill="rgba(0,212,255,0.18)"/>
+            <rect x="8" y="29" width="4" height="9" rx="2" fill="rgba(224,64,251,0.35)"/>
+            <rect x="40" y="29" width="4" height="9" rx="2" fill="rgba(0,212,255,0.35)"/>
+          </svg>
+        </div>
+        <div class="bot-hero-info">
+          <h3>Lyrio Bot <span style="font-size:0.7em;color:var(--blue);font-family:'Space Mono',monospace;font-weight:400;">Music</span></h3>
+          <p>Crystal-clear audio, queue management, playlist support, lyrics, equalizer controls and more. The ultimate music experience for your Discord server.</p>
+          <div class="bot-features-inline">
+            <span>✦ YouTube & Spotify</span>
+            <span>✦ 24/7 Mode</span>
+            <span>✦ Queue System</span>
+            <span>✦ Equalizer</span>
+            <span>✦ Lyrics</span>
+            <span>✦ Radio Stations</span>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-grid">
+        <!-- Starter - Free -->
+        <div class="price-card reveal">
+          <div class="plan-name">Starter</div>
+          <div class="plan-price">
+            <span class="curr-symbol">$</span>
+            <span class="price-amount monthly-price">0</span>
+            <span class="price-amount yearly-price" style="display:none">0</span>
+            <span class="price-period monthly-period">/mo</span>
+            <span class="price-period yearly-period" style="display:none">/yr</span>
+          </div>
+          <div class="plan-desc">Free forever. Get started with core music features at no cost.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Basic music playback</li>
+            <li><span class="feat-check">✓</span> YouTube support</li>
+            <li><span class="feat-check">✓</span> Queue (up to 20 songs)</li>
+            <li><span class="feat-check">✓</span> Standard audio quality</li>
+            <li><span class="feat-x">✗</span> Spotify & Apple Music</li>
+            <li><span class="feat-x">✗</span> Equalizer & filters</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-ghost" style="display:block;text-align:center;text-decoration:none;">Get Started Free</a>
+        </div>
+        <!-- Pro -->
+        <div class="price-card popular reveal">
+          <div class="popular-badge">Most Popular</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-price">
+            <span class="curr-symbol">$</span>
+            <span class="price-amount monthly-price">3.99</span>
+            <span class="price-amount yearly-price" style="display:none">2.95</span>
+            <span class="price-period monthly-period">/mo</span>
+            <span class="price-period yearly-period" style="display:none">/mo, billed yearly</span>
+          </div>
+          <div class="plan-desc">Unlock the full music experience for your personal server.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Everything in Starter</li>
+            <li><span class="feat-check">✓</span> Spotify & Apple Music</li>
+            <li><span class="feat-check">✓</span> Unlimited queue</li>
+            <li><span class="feat-check">✓</span> HD audio quality</li>
+            <li><span class="feat-check">✓</span> Equalizer & filters</li>
+            <li><span class="feat-check">✓</span> Lyrics display</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-primary" style="display:block;text-align:center;text-decoration:none;">Get Pro</a>
+        </div>
+        <!-- Server Pro -->
+        <div class="price-card reveal">
+          <div class="plan-name">Server Pro</div>
+          <div class="plan-price">
+            <span class="curr-symbol">$</span>
+            <span class="price-amount monthly-price">9.99</span>
+            <span class="price-amount yearly-price" style="display:none">7.39</span>
+            <span class="price-period monthly-period">/mo</span>
+            <span class="price-period yearly-period" style="display:none">/mo, billed yearly</span>
+          </div>
+          <div class="plan-desc">Built for large communities that need 24/7 music at scale.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Everything in Pro</li>
+            <li><span class="feat-check">✓</span> 24/7 music mode</li>
+            <li><span class="feat-check">✓</span> Multiple voice channels</li>
+            <li><span class="feat-check">✓</span> Custom radio stations</li>
+            <li><span class="feat-check">✓</span> Priority support</li>
+            <li><span class="feat-check">✓</span> Early access features</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-ghost" style="display:block;text-align:center;text-decoration:none;">Get Server Pro</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ANTINUKE BOT ── -->
+    <div class="bot-panel" id="panel-antinuke">
+      <div class="bot-hero-card reveal">
+        <div class="bot-hero-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="shieldG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <path d="M26 6 L44 13 L44 27 C44 37 35 45 26 48 C17 45 8 37 8 27 L8 13 Z" stroke="url(#shieldG)" stroke-width="2.2" fill="rgba(0,212,255,0.06)" stroke-linejoin="round"/>
+            <path d="M26 12 L38 17.5 L38 27.5 C38 34.5 32 40 26 42.5 C20 40 14 34.5 14 27.5 L14 17.5 Z" fill="rgba(224,64,251,0.06)" stroke="rgba(224,64,251,0.25)" stroke-width="1" stroke-linejoin="round"/>
+            <path d="M18 27 L23 32 L34 21" stroke="url(#shieldG)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="bot-hero-info">
+          <h3>AntiNuke Bot</h3>
+          <p>Military-grade server protection. Detects and instantly rolls back mass bans, channel deletions, role removals and other nuking attempts in real time.</p>
+          <div class="bot-features-inline">
+            <span>✦ Real-time Detection</span>
+            <span>✦ Auto Rollback</span>
+            <span>✦ Whitelist System</span>
+            <span>✦ Audit Logs</span>
+            <span>✦ Alert Channels</span>
+            <span>✦ Role Lockdown</span>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-grid pricing-grid-2">
+        <!-- 1 Month -->
+        <div class="price-card popular reveal">
+          <div class="popular-badge">Standard</div>
+          <div class="plan-name">1 Month</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">145</span>
+            <span class="price-amount yearly-price" style="display:none">145</span>
+            <span class="price-period monthly-period">/mo</span>
+            <span class="price-period yearly-period" style="display:none">/mo</span>
+          </div>
+          <div class="plan-desc">Full AntiNuke protection for one month. Instant activation.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Full nuke detection</li>
+            <li><span class="feat-check">✓</span> Auto-ban attackers</li>
+            <li><span class="feat-check">✓</span> Whitelist system</li>
+            <li><span class="feat-check">✓</span> Alert channel logging</li>
+            <li><span class="feat-check">✓</span> Role & channel protection</li>
+            <li><span class="feat-check">✓</span> 24/7 active monitoring</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-primary" style="display:block;text-align:center;text-decoration:none;">Buy — ₹145</a>
+        </div>
+        <!-- 3 Months -->
+        <div class="price-card reveal">
+          <div class="plan-name">3 Months</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">360</span>
+            <span class="price-amount yearly-price" style="display:none">360</span>
+            <span class="price-period monthly-period">/3 mo</span>
+            <span class="price-period yearly-period" style="display:none">/3 mo</span>
+          </div>
+          <div class="plan-desc">Best value — save ₹75 compared to buying 3 months separately.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Everything in 1 Month</li>
+            <li><span class="feat-check">✓</span> 3 months continuous access</li>
+            <li><span class="feat-check">✓</span> Save ₹75 vs monthly</li>
+            <li><span class="feat-check">✓</span> Priority support</li>
+            <li><span class="feat-check">✓</span> Auto-renewal option</li>
+            <li><span class="feat-check">✓</span> Extended audit logs</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-ghost" style="display:block;text-align:center;text-decoration:none;">Buy — ₹360</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── NUKE BOT ── -->
+    <div class="bot-panel" id="panel-nuke">
+      <div class="bot-hero-card reveal">
+        <div class="bot-hero-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="nukeG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient>
+              <radialGradient id="nukeGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(224,64,251,0.3)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+            </defs>
+            <circle cx="26" cy="26" r="18" fill="url(#nukeGlow)"/>
+            <path d="M30 6 L16 28 L24 28 L22 46 L38 22 L28 22 Z" stroke="url(#nukeG)" stroke-width="2" stroke-linejoin="round" fill="rgba(224,64,251,0.15)"/>
+            <line x1="8" y1="10" x2="12" y2="14" stroke="rgba(0,212,255,0.6)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="44" y1="10" x2="40" y2="14" stroke="rgba(224,64,251,0.6)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="6" y1="26" x2="11" y2="26" stroke="rgba(0,212,255,0.5)" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="46" y1="26" x2="41" y2="26" stroke="rgba(224,64,251,0.5)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="bot-hero-info">
+          <h3>Nuke Bot</h3>
+          <p>Total server control at your fingertips. Choose between Spam Nuke for mass channel flooding or Ping Nuke for mass mention attacks — for authorized admins only.</p>
+          <div class="bot-features-inline">
+            <span>✦ Spam Nuke</span>
+            <span>✦ Ping Nuke</span>
+            <span>✦ Mass Ban</span>
+            <span>✦ Channel Wipe</span>
+            <span>✦ Role Reset</span>
+            <span>✦ Admin Only</span>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-grid pricing-grid-2">
+        <!-- Spam Nuke -->
+        <div class="price-card reveal">
+          <div class="plan-name">Spam Nuke</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">45</span>
+            <span class="price-amount yearly-price" style="display:none">45</span>
+            <span class="price-period monthly-period">/lifetime</span>
+            <span class="price-period yearly-period" style="display:none">/lifetime</span>
+          </div>
+          <div class="plan-desc">Mass spam flooding across channels. Instant delivery, no monthly fees.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Mass channel spamming</li>
+            <li><span class="feat-check">✓</span> Custom spam message</li>
+            <li><span class="feat-check">✓</span> Speed control</li>
+            <li><span class="feat-check">✓</span> Instant bot delivery</li>
+            <li><span class="feat-x">✗</span> Ping/mention attacks</li>
+            <li><span class="feat-x">✗</span> Role mass ping</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-ghost" style="display:block;text-align:center;text-decoration:none;">Buy — ₹45</a>
+        </div>
+        <!-- Ping Nuke -->
+        <div class="price-card popular reveal">
+          <div class="popular-badge">Advanced</div>
+          <div class="plan-name">Ping Nuke</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">260</span>
+            <span class="price-amount yearly-price" style="display:none">260</span>
+            <span class="price-period monthly-period">/lifetime</span>
+            <span class="price-period yearly-period" style="display:none">/lifetime</span>
+          </div>
+          <div class="plan-desc">Mass mention & ping attacks. Full server disruption capability.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Mass user pinging</li>
+            <li><span class="feat-check">✓</span> Role mass mention</li>
+            <li><span class="feat-check">✓</span> @everyone / @here bypass</li>
+            <li><span class="feat-check">✓</span> Rapid-fire ping mode</li>
+            <li><span class="feat-check">✓</span> Custom ping intervals</li>
+            <li><span class="feat-check">✓</span> Priority bot delivery</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-primary" style="display:block;text-align:center;text-decoration:none;">Buy — ₹260</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MASS DM BOT ── -->
+    <div class="bot-panel" id="panel-massdm">
+      <div class="bot-hero-card reveal">
+        <div class="bot-hero-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="dmG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <rect x="5" y="10" width="42" height="30" rx="4" stroke="url(#dmG)" stroke-width="2.2" fill="rgba(0,212,255,0.07)"/>
+            <path d="M5 14 L26 28 L47 14" stroke="url(#dmG)" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="40" cy="38" r="8" fill="rgba(224,64,251,0.2)" stroke="url(#dmG)" stroke-width="2"/>
+            <path d="M37 38 L39 40 L43 36" stroke="url(#dmG)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="bot-hero-info">
+          <h3>Mass DM Bot</h3>
+          <p>DM every single member in a server with any message you want. Perfect for announcements, promotions, or outreach campaigns at scale.</p>
+          <div class="bot-features-inline">
+            <span>✦ DM All Members</span>
+            <span>✦ Custom Message</span>
+            <span>✦ Embed Support</span>
+            <span>✦ Any Server</span>
+            <span>✦ Fast Delivery</span>
+            <span>✦ Bypass Restrictions</span>
+          </div>
+        </div>
+      </div>
+      <div class="pricing-grid pricing-grid-2">
+        <!-- 1 Month -->
+        <div class="price-card popular reveal">
+          <div class="popular-badge">Standard</div>
+          <div class="plan-name">1 Month</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">110</span>
+            <span class="price-amount yearly-price" style="display:none">110</span>
+            <span class="price-period monthly-period">/mo</span>
+            <span class="price-period yearly-period" style="display:none">/mo</span>
+          </div>
+          <div class="plan-desc">DM all server members for a full month. No limits on messages.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> DM all server members</li>
+            <li><span class="feat-check">✓</span> Custom message content</li>
+            <li><span class="feat-check">✓</span> Embed & image support</li>
+            <li><span class="feat-check">✓</span> Multiple servers</li>
+            <li><span class="feat-check">✓</span> Fast delivery speed</li>
+            <li><span class="feat-check">✓</span> 24/7 availability</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-primary" style="display:block;text-align:center;text-decoration:none;">Buy — ₹110</a>
+        </div>
+        <!-- 3 Months -->
+        <div class="price-card reveal">
+          <div class="plan-name">3 Months</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">260</span>
+            <span class="price-amount yearly-price" style="display:none">260</span>
+            <span class="price-period monthly-period">/3 mo</span>
+            <span class="price-period yearly-period" style="display:none">/3 mo</span>
+          </div>
+          <div class="plan-desc">Save ₹70 — three months of unlimited mass DMs at a lower rate.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Everything in 1 Month</li>
+            <li><span class="feat-check">✓</span> 3 months access</li>
+            <li><span class="feat-check">✓</span> Save ₹70 vs monthly</li>
+            <li><span class="feat-check">✓</span> Priority support</li>
+            <li><span class="feat-check">✓</span> Scheduled DM campaigns</li>
+            <li><span class="feat-check">✓</span> Delivery reports</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-ghost" style="display:block;text-align:center;text-decoration:none;">Buy — ₹260</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOM BOT ── -->
+    <div class="bot-panel" id="panel-custom">
+      <div class="bot-hero-card reveal">
+        <div class="bot-hero-icon">
+          <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="customG" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e040fb"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs>
+            <circle cx="26" cy="26" r="18" stroke="url(#customG)" stroke-width="2.2" fill="rgba(224,64,251,0.07)"/>
+            <path d="M20 26 L24 30 L32 22" stroke="url(#customG)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="26" cy="10" r="2.5" fill="#e040fb" opacity="0.8"/>
+            <circle cx="26" cy="42" r="2.5" fill="#00d4ff" opacity="0.8"/>
+            <circle cx="10" cy="26" r="2.5" fill="#7b5ea7" opacity="0.8"/>
+            <circle cx="42" cy="26" r="2.5" fill="#7b5ea7" opacity="0.8"/>
+          </svg>
+        </div>
+        <div class="bot-hero-info">
+          <h3>Custom Bot</h3>
+          <p>Any bot of your choice — built exactly to your specifications. Tell us what you need and we'll build it. One flat price, fully tailored to your server.</p>
+          <div class="bot-features-inline">
+            <span>✦ Any Bot Type</span>
+            <span>✦ Custom Commands</span>
+            <span>✦ Your Branding</span>
+            <span>✦ Full Source Code</span>
+            <span>✦ Dedicated Support</span>
+            <span>✦ Lifetime Access</span>
+          </div>
+        </div>
+      </div>
+      <!-- Single card full width -->
+      <div class="pricing-grid pricing-grid-1">
+        <div class="price-card popular reveal" style="max-width:480px;margin:0 auto;width:100%">
+          <div class="popular-badge">Flat Rate</div>
+          <div class="plan-name">Custom Bot</div>
+          <div class="plan-price">
+            <span class="curr-symbol">₹</span>
+            <span class="price-amount monthly-price">300</span>
+            <span class="price-amount yearly-price" style="display:none">300</span>
+            <span class="price-period monthly-period">/bot</span>
+            <span class="price-period yearly-period" style="display:none">/bot</span>
+          </div>
+          <div class="plan-desc">One flat price. Any bot you want, built by our team. No hidden fees, no subscriptions.</div>
+          <ul class="plan-features">
+            <li><span class="feat-check">✓</span> Any bot of your choice</li>
+            <li><span class="feat-check">✓</span> Custom commands & features</li>
+            <li><span class="feat-check">✓</span> Your server branding & prefix</li>
+            <li><span class="feat-check">✓</span> Full setup & configuration</li>
+            <li><span class="feat-check">✓</span> 7-day post-delivery support</li>
+            <li><span class="feat-check">✓</span> Lifetime bot access</li>
+          </ul>
+          <a href="https://discord.gg/tvycnZvhQy" target="_blank" class="plan-btn plan-btn-primary" style="display:block;text-align:center;text-decoration:none;">Order Custom Bot — ₹300</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="container reveal">
+    <div class="section-label" style="justify-content:center">Get started</div>
+    <h2>Ready to build<br><span class="h1-gradient">something great?</span></h2>
+    <p>Drop your email and we'll reach out within 24 hours to discuss your project, timeline, and goals.</p>
+    <div class="cta-input-row">
+      <input class="cta-input" type="email" placeholder="your@company.com">
+      <button class="btn-primary" onclick="window.open('https://discord.gg/tvycnZvhQy','_blank')"><span>Let's Talk</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CodeNest</div>
+  <div class="footer-copy">© 2025 CodeNest. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">GitHub</a>
+    <a href="#">Twitter</a>
+    <a href="https://discord.gg/tvycnZvhQy" target="_blank">Discord</a>
+  </div>
+</footer>
+
+<script>
+// Custom cursor
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top  = mouseY + 'px';
+});
+
+function animateRing() {
+  ringX += (mouseX - ringX) * 0.12;
+  ringY += (mouseY - ringY) * 0.12;
+  ring.style.left = ringX + 'px';
+  ring.style.top  = ringY + 'px';
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+// Scale cursor on hover
+document.querySelectorAll('a, button, .service-card, .tech-pill').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+    ring.style.transform = 'translate(-50%,-50%) scale(1.5)';
+    ring.style.borderColor = 'rgba(224,64,251,0.7)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.borderColor = 'rgba(0,212,255,0.5)';
+  });
+});
+
+// Intersection Observer for reveal animations
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal, .process-step').forEach(el => observer.observe(el));
+
+// Counter animation for stats
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const els = entry.target.querySelectorAll('[data-target]');
+      els.forEach(el => {
+        const target = +el.dataset.target;
+        const suffix = el.nextElementSibling?.textContent.includes('Uptime') ? '+' : '+';
+        let current = 0;
+        const step = target / 50;
+        const timer = setInterval(() => {
+          current = Math.min(current + step, target);
+          el.textContent = Math.floor(current);
+          if (current >= target) {
+            el.textContent = target + (target === 99 ? '%' : '+');
+            clearInterval(timer);
+          }
+        }, 30);
+      });
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('.stats-grid').forEach(el => counterObserver.observe(el));
+
+// Bot tab switching
+function switchBot(bot, el) {
+  document.querySelectorAll('.bot-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.bot-panel').forEach(p => { p.classList.remove('active'); p.style.animation = ''; });
+  el.classList.add('active');
+  const panel = document.getElementById('panel-' + bot);
+  panel.classList.add('active');
+  panel.style.animation = 'fadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both';
+  panel.querySelectorAll('.reveal').forEach(r => {
+    r.classList.remove('visible');
+    setTimeout(() => r.classList.add('visible'), 50);
+  });
+}
+
+// Billing toggle
+let isYearly = false;
+function toggleBilling() {
+  isYearly = !isYearly;
+  const thumb = document.getElementById('toggleThumb');
+  const lblM = document.getElementById('lbl-monthly');
+  const lblY = document.getElementById('lbl-yearly');
+  thumb.classList.toggle('yearly', isYearly);
+  lblM.style.color = isYearly ? 'rgba(201,216,240,0.4)' : 'var(--white)';
+  lblY.style.color = isYearly ? 'var(--white)' : 'rgba(201,216,240,0.4)';
+
+  document.querySelectorAll('.monthly-price').forEach(el => el.style.display = isYearly ? 'none' : '');
+  document.querySelectorAll('.yearly-price').forEach(el => el.style.display = isYearly ? '' : 'none');
+  document.querySelectorAll('.monthly-period').forEach(el => el.style.display = isYearly ? 'none' : '');
+  document.querySelectorAll('.yearly-period').forEach(el => el.style.display = isYearly ? '' : 'none');
+}
+
+// Stagger process steps
+document.querySelectorAll('.process-step').forEach((el, i) => {
+  el.style.transitionDelay = `${i * 0.1}s`;
+});
+</script>
+</body>
+</html>
